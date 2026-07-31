@@ -1,0 +1,90 @@
+{
+  "profile": {
+    "name": "Ahmad Genius",
+    "title": "Full Stack Software Engineer & Founder",
+    "tagline": "Building scalable SaaS products from scratch",
+    "company": "Ai Schooling System",
+    "bio": "Solo architect building a multi-tenant school management SaaS platform serving 500+ schools. Full stack engineer working across web, mobile, and desktop — from MongoDB schemas to React Native crash fixes to Electron desktop tools.",
+    "location": "Punjab, Pakistan",
+    "email": "",
+    "phone": "",
+    "resumeUrl": "",
+    "social": {
+      "github": "",
+      "linkedin": "",
+      "twitter": "",
+      "website": ""
+    }
+  },
+
+  "skills": {
+    "frontend": ["HTML", "CSS", "JavaScript", "React JS", "Next.js", "AG Grid", "PWA"],
+    "mobile": ["React Native CLI", "Notifee (Push Notifications)", "Google AdMob", "ML Kit (Face Detection)"],
+    "desktop": ["Electron"],
+    "backend": ["Node.js", "Express.js", "REST APIs", "Socket.IO"],
+    "database": ["MongoDB", "Mongoose", "MongoDB Atlas"],
+    "auth": ["JWT Authentication", "Session-based Authentication", "Cookie-based Auth"],
+    "devops": ["GitHub Actions (CI/CD)", "Backblaze B2 (Automated Backups)", "Sentry (Error Monitoring)", "Crashlytics"],
+    "architecture": ["Multi-tenant SaaS", "Event-driven systems", "Socket.IO bridges", "Subdomain architecture"]
+  },
+
+  "flagshipProject": {
+    "name": "Ai Schooling System",
+    "description": "Multi-tenant school management SaaS platform serving 500+ schools, covering fee management, biometric attendance, real-time chat, transport, exams, timetable, payroll, and notifications.",
+    "stack": ["Next.js", "React Native", "Electron", "Node.js", "Express", "MongoDB Atlas", "Socket.IO"],
+    "modules": [
+      "Fee & Finance Management (expenses, income, fines, salary, loans)",
+      "Biometric Attendance (AIface device integration over LAN)",
+      "Real-time Chat (Socket.IO + FCM push notifications)",
+      "Transport Management (driver mapping, route reports)",
+      "Exams & Timetable Scheduling",
+      "Tasks Module (Super Admin → Admin → Staff role hierarchy)",
+      "Help Center / Support Tickets (5-stage workflow)",
+      "Custom WhatsApp Sender (Baileys-based, no WhatsApp Business API fees)",
+      "Custom SMS Gateway (Android device + Socket.IO bridge)",
+      "Automated Daily DB Backups (GitHub Actions → Backblaze B2, AES-256-CBC)"
+    ]
+  },
+
+  "otherProjects": [
+    {
+      "name": "WhatsApp Sender System",
+      "description": "MERN backend + Electron desktop app + Socket.IO bridge letting schools send WhatsApp messages via their own paired devices using Baileys — no WhatsApp Business API fees. Event-driven dispatch (zero polling), two-token device auth, in-memory cached history service with debounced disk writes.",
+      "stack": ["Node.js", "Express", "Electron", "Socket.IO", "Baileys", "MongoDB"]
+    },
+    {
+      "name": "Biometric Attendance Desktop App",
+      "description": "Electron app for bulk student uploads to AIface biometric devices over LAN, with image prefetching via keep-alive agents.",
+      "stack": ["Electron", "Node.js"]
+    },
+    {
+      "name": "Console Backend (WhatsApp OTP Service)",
+      "description": "Baileys-based WhatsApp OTP delivery service built and debugged with key architectural fixes for reliability.",
+      "stack": ["Node.js", "Baileys"]
+    }
+  ],
+
+  "highlights": [
+    "Built and scaled a multi-tenant SaaS serving 500+ schools solo",
+    "Migrated chat system from embedded arrays to a separate Message collection with cursor-based pagination",
+    "Migrated AG Grid from MUI DataGrid with full sticky header, 3-section pinning, and context menus",
+    "Resolved a persistent Android network hang bug rooted in OkHttp connection pool reuse",
+    "Implemented AES-256-CBC encrypted automated backups to Backblaze B2 via GitHub Actions",
+    "Built a custom WhatsApp sending system to avoid WhatsApp Business API costs",
+    "Integrated Sentry across backend, frontend, and mobile with parallel Crashlytics tracking"
+  ],
+
+  "experience": [
+    {
+      "role": "Founder & Full Stack Engineer",
+      "company": "Ai Schooling System",
+      "duration": "",
+      "description": "Solo architect of a multi-tenant school management SaaS across Next.js web, React Native mobile, Electron desktop, Node.js/Express backend, and MongoDB Atlas."
+    }
+  ],
+
+  "meta": {
+    "note": "Edit any field above anytime to update the portfolio content — no code changes needed.",
+    "lastUpdated": ""
+  }
+}
