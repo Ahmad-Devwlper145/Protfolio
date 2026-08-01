@@ -53,25 +53,30 @@ const Scene = () => {
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
       let resizeHandler: () => void;
-      loadCharacter().then((gltf) => {
-        if (gltf) {
-          const animations = setAnimations(gltf);
-          hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
-          mixer = animations.mixer;
-          const character = gltf.scene;
-          scene.add(character);
-          headBone = character.getObjectByName("spine006") || null;
-          screenLight = character.getObjectByName("screenlight") || null;
-          progress.loaded().then(() => {
-            setTimeout(() => {
-              light.turnOnLights();
-              animations.startIntro();
-            }, 2500);
-          });
-          resizeHandler = () => handleResize(renderer, camera, canvasDiv, character);
-          window.addEventListener("resize", resizeHandler);
-        }
-      });
+      loadCharacter()
+        .then((gltf) => {
+          if (gltf) {
+            const animations = setAnimations(gltf);
+            hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
+            mixer = animations.mixer;
+            const character = gltf.scene;
+            scene.add(character);
+            headBone = character.getObjectByName("spine006") || null;
+            screenLight = character.getObjectByName("screenlight") || null;
+            progress.loaded().then(() => {
+              setTimeout(() => {
+                light.turnOnLights();
+                animations.startIntro();
+              }, 2500);
+            });
+            resizeHandler = () => handleResize(renderer, camera, canvasDiv, character);
+            window.addEventListener("resize", resizeHandler);
+          }
+        })
+        .catch((error) => {
+          console.error("Character model failed to load:", error);
+          setLoading(100);
+        });
 
       let mouse = { x: 0, y: 0 },
         interpolation = { x: 0.1, y: 0.2 };
