@@ -1,5 +1,5 @@
-import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,21 +9,17 @@ export default defineConfig({
     host: true,
   },
   build: {
+    // No manual chunking. The previous hand-written manualChunks map pulled
+    // react/react-dom into the "r3f" chunk, so the entry statically imported
+    // ~960 KB gzipped of fiber/drei/rapier/postprocessing just to boot React.
+    // Character/ and TechStack/ are both dynamically imported, so Rollup's
+    // default splitting already puts three + the physics stack behind those
+    // lazy boundaries.
+    chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
-        // Split heavy libraries into their own cacheable chunks so the initial
-        // bundle is smaller and vendor code is cached across deploys.
-        manualChunks: {
-          three: ["three", "three-stdlib"],
-          r3f: [
-            "@react-three/fiber",
-            "@react-three/drei",
-            "@react-three/rapier",
-            "@react-three/postprocessing",
-          ],
-          gsap: ["gsap", "@gsap/react"],
-          react: ["react", "react-dom"],
-        },
+        assetFileNames: "assets/[name]-[hash][extname]",
+        chunkFileNames: "assets/[name]-[hash].js",
       },
     },
   },

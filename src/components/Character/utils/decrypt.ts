@@ -14,25 +14,14 @@ export const decryptFile = async (
   url: string,
   password: string
 ): Promise<ArrayBuffer> => {
-  const response = await fetch(url);
-
+  // credentials/mode must match the <link rel="preload" as="fetch"
+  // crossorigin="anonymous"> in index.html, otherwise the preloaded copy is
+  // discarded and the browser downloads the whole model a second time.
+  const response = await fetch(url, { mode: "cors", credentials: "omit" });
   if (!response.ok) {
-    throw new Error(`Failed to fetch encrypted model: ${response.status}`);
+    throw new Error(`Failed to fetch model: ${response.status} ${url}`);
   }
-
   const encryptedData = await response.arrayBuffer();
-
-  if (encryptedData.byteLength < 16) {
-    throw new Error("Model file is too small to be a valid encrypted asset.");
-  }
-
-  const textPreview = new TextDecoder().decode(encryptedData.slice(0, 128));
-  if (textPreview.includes("git-lfs.github.com/spec/v1")) {
-    throw new Error(
-      "Git LFS pointer detected: the actual 3D model file was not checked out."
-    );
-  }
-
   const iv = new Uint8Array(encryptedData.slice(0, 16));
   const data = encryptedData.slice(16);
   const key = await generateAESKey(password);

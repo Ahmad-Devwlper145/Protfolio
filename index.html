@@ -3,10 +3,30 @@
 
 <head>
   <meta charset="UTF-8" />
-  <!-- <link rel="icon" type="image/svg+xml" href="/" /> -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e17" />
+  <meta name="description"
+    content="Ahmad Genius — Full Stack Software Engineer & Founder. Building scalable SaaS products from scratch." />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+  <!-- Font is linked here rather than @import-ed from CSS so it downloads in
+       parallel with the stylesheet instead of after it. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" />
+
+  <!-- Start the character download immediately, in parallel with the JS bundle,
+       instead of waiting for the 3D chunk to parse and execute. The URL must
+       match Character/utils/character.ts exactly or it downloads twice. -->
+  <link rel="preload" as="fetch" href="/models/character.enc?v=3" crossorigin="anonymous" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Ahmad Genius — Full Stack Software Engineer" />
+  <meta property="og:description" content="Building scalable SaaS products from scratch." />
+  <meta property="og:image" content="/images/preview.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <title>Portfolio</title>
 </head>
 

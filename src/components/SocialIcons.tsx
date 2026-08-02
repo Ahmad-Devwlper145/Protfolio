@@ -18,83 +18,103 @@ const social = profile.social as {
   instagram?: string;
 };
 
+// Only render icons that actually have a URL in data.json — a blank entry
+// used to ship as a dead "#" link.
+const links = (
+  [
+    { key: "github", href: social.github, Icon: FaGithub },
+    { key: "linkedin", href: social.linkedin, Icon: FaLinkedinIn },
+    { key: "twitter", href: social.twitter, Icon: FaXTwitter },
+    { key: "instagram", href: social.instagram, Icon: FaInstagram },
+  ] as const
+).filter((l): l is typeof l & { href: string } => Boolean(l.href));
+
 const SocialIcons = () => {
   useEffect(() => {
-    const social = document.getElementById("social") as HTMLElement;
+    const social = document.getElementById("social");
+    if (!social) return;
 
-    social.querySelectorAll("span").forEach((item) => {
+    // One shared rAF loop and one shared mousemove listener for all icons —
+    // previously each icon started its own loop that was never cancelled, and
+    // the cleanup returned from inside forEach was silently discarded.
+    const items = Array.from(social.querySelectorAll("span")).map((item) => {
       const elem = item as HTMLElement;
-      const link = elem.querySelector("a") as HTMLElement;
-
-      const rect = elem.getBoundingClientRect();
-      let mouseX = rect.width / 2;
-      let mouseY = rect.height / 2;
-      let currentX = 0;
-      let currentY = 0;
-
-      const updatePosition = () => {
-        currentX += (mouseX - currentX) * 0.1;
-        currentY += (mouseY - currentY) * 0.1;
-
-        link.style.setProperty("--siLeft", `${currentX}px`);
-        link.style.setProperty("--siTop", `${currentY}px`);
-
-        requestAnimationFrame(updatePosition);
-      };
-
-      const onMouseMove = (e: MouseEvent) => {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        if (x < 40 && x > 10 && y < 40 && y > 5) {
-          mouseX = x;
-          mouseY = y;
-        } else {
-          mouseX = rect.width / 2;
-          mouseY = rect.height / 2;
-        }
-      };
-
-      document.addEventListener("mousemove", onMouseMove);
-
-      updatePosition();
-
-      return () => {
-        elem.removeEventListener("mousemove", onMouseMove);
+      return {
+        elem,
+        link: elem.querySelector("a") as HTMLElement | null,
+        rect: elem.getBoundingClientRect(),
+        mouseX: 0,
+        mouseY: 0,
+        currentX: 0,
+        currentY: 0,
       };
     });
+
+    const recenter = () => {
+      items.forEach((it) => {
+        it.rect = it.elem.getBoundingClientRect();
+        it.mouseX = it.rect.width / 2;
+        it.mouseY = it.rect.height / 2;
+      });
+    };
+    recenter();
+
+    let frame = 0;
+    const updatePosition = () => {
+      items.forEach((it) => {
+        if (!it.link) return;
+        it.currentX += (it.mouseX - it.currentX) * 0.1;
+        it.currentY += (it.mouseY - it.currentY) * 0.1;
+        it.link.style.setProperty("--siLeft", `${it.currentX}px`);
+        it.link.style.setProperty("--siTop", `${it.currentY}px`);
+      });
+      frame = requestAnimationFrame(updatePosition);
+    };
+    frame = requestAnimationFrame(updatePosition);
+
+    const onMouseMove = (e: MouseEvent) => {
+      items.forEach((it) => {
+        const x = e.clientX - it.rect.left;
+        const y = e.clientY - it.rect.top;
+        if (x < 40 && x > 10 && y < 40 && y > 5) {
+          it.mouseX = x;
+          it.mouseY = y;
+        } else {
+          it.mouseX = it.rect.width / 2;
+          it.mouseY = it.rect.height / 2;
+        }
+      });
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("resize", recenter);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("resize", recenter);
+    };
   }, []);
 
   return (
     <div className="icons-section">
       <div className="social-icons" data-cursor="icons" id="social">
-        <span>
-          <a href={social.github || "#"} target="_blank">
-            <FaGithub />
-          </a>
-        </span>
-        <span>
-          <a href={social.linkedin || "#"} target="_blank">
-            <FaLinkedinIn />
-          </a>
-        </span>
-        <span>
-          <a href={social.twitter || "#"} target="_blank">
-            <FaXTwitter />
-          </a>
-        </span>
-        <span>
-          <a href={social.instagram || "#"} target="_blank">
-            <FaInstagram />
-          </a>
-        </span>
+        {links.map(({ key, href, Icon }) => (
+          <span key={key}>
+            <a href={href} target="_blank" rel="noreferrer" aria-label={key}>
+              <Icon />
+            </a>
+          </span>
+        ))}
       </div>
-      <a className="resume-button" href={profile.resumeUrl || "#"}>
-        <HoverLinks text="RESUME" />
-        <span>
-          <TbNotes />
-        </span>
-      </a>
+      {profile.resumeUrl && (
+        <a className="resume-button" href={profile.resumeUrl} target="_blank" rel="noreferrer">
+          <HoverLinks text="RESUME" />
+          <span>
+            <TbNotes />
+          </span>
+        </a>
+      )}
     </div>
   );
 };

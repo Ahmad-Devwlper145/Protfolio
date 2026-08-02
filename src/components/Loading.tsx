@@ -11,27 +11,43 @@ const Loading = ({ percent }: { percent: number }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [clicked, setClicked] = useState(false);
 
-  if (percent >= 100) {
-    setTimeout(() => {
-      setLoaded(true);
-      setTimeout(() => {
-        setIsLoaded(true);
-      }, 1000);
-    }, 600);
-  }
+  // Latch: once we've hit 100 we stay complete. Belt-and-braces alongside the
+  // monotonic setter in LoadingProvider — a percent that dips back below 100
+  // must never be able to cancel the reveal timers below.
+  const [isComplete, setIsComplete] = useState(false);
+  useEffect(() => {
+    if (percent >= 100) setIsComplete(true);
+  }, [percent]);
+
+  // Warm the intro-animation chunk while the model is still downloading, so
+  // revealing the page doesn't wait on a fresh network round-trip.
+  useEffect(() => {
+    import("./utils/initialFX");
+  }, []);
+
+  // Runs once when the bar actually reaches 100 — doing this during render
+  // spawned a fresh timer chain on every re-render.
+  useEffect(() => {
+    if (!isComplete) return;
+    const t1 = setTimeout(() => setLoaded(true), 150);
+    const t2 = setTimeout(() => setIsLoaded(true), 550);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [isComplete]);
 
   useEffect(() => {
+    if (!isLoaded) return;
+    let timer: number;
     import("./utils/initialFX").then((module) => {
-      if (isLoaded) {
-        setClicked(true);
-        setTimeout(() => {
-          if (module.initialFX) {
-            module.initialFX();
-          }
-          setIsLoading(false);
-        }, 900);
-      }
+      setClicked(true);
+      timer = setTimeout(() => {
+        module.initialFX?.();
+        setIsLoading(false);
+      }, 300);
     });
+    return () => clearTimeout(timer);
   }, [isLoaded]);
 
   function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
@@ -97,21 +113,23 @@ export const setProgress = (setLoading: (value: number) => void) => {
   let percent: number = 0;
 
   let interval = setInterval(() => {
-    if (percent <= 50) {
-      let rand = Math.round(Math.random() * 5);
+    if (percent <= 60) {
+      const rand = Math.round(Math.random() * 6);
       percent = percent + rand;
       setLoading(percent);
     } else {
       clearInterval(interval);
+      // Creep toward the cap quickly enough that the bar never looks frozen
+      // while the model is still on the wire.
       interval = setInterval(() => {
         percent = percent + Math.round(Math.random());
         setLoading(percent);
         if (percent > 91) {
           clearInterval(interval);
         }
-      }, 2000);
+      }, 400);
     }
-  }, 100);
+  }, 60);
 
   function clear() {
     clearInterval(interval);

@@ -10,6 +10,16 @@ const social = profile.social as {
   instagram?: string;
 };
 
+// Blank entries in data.json are skipped rather than rendered as "#" links.
+const socialLinks = (
+  [
+    { label: "Github", href: social.github },
+    { label: "Linkedin", href: social.linkedin },
+    { label: "Twitter", href: social.twitter },
+    { label: "Instagram", href: social.instagram },
+  ] as const
+).filter((l): l is typeof l & { href: string } => Boolean(l.href));
+
 const Contact = () => {
   return (
     <div className="contact-section section-container" id="contact">
@@ -17,15 +27,16 @@ const Contact = () => {
         <h3>Contact</h3>
         <div className="contact-flex">
           <div className="contact-box">
-            <h4>Email</h4>
-            <p>
-              <a
-                href={profile.email ? `mailto:${profile.email}` : "#"}
-                data-cursor="disable"
-              >
-                {profile.email}
-              </a>
-            </p>
+            {profile.email && (
+              <>
+                <h4>Email</h4>
+                <p>
+                  <a href={`mailto:${profile.email}`} data-cursor="disable">
+                    {profile.email}
+                  </a>
+                </p>
+              </>
+            )}
             {profile.location && (
               <>
                 <h4>Location</h4>
@@ -35,38 +46,18 @@ const Contact = () => {
           </div>
           <div className="contact-box">
             <h4>Social</h4>
-            <a
-              href={social.github || "#"}
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Github <MdArrowOutward />
-            </a>
-            <a
-              href={social.linkedin || "#"}
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Linkedin <MdArrowOutward />
-            </a>
-            <a
-              href={social.twitter || "#"}
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Twitter <MdArrowOutward />
-            </a>
-            <a
-              href={social.instagram || "#"}
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Instagram <MdArrowOutward />
-            </a>
+            {socialLinks.map(({ label, href }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                data-cursor="disable"
+                className="contact-social"
+              >
+                {label} <MdArrowOutward />
+              </a>
+            ))}
           </div>
           <div className="contact-box">
             <h2>

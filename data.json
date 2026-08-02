@@ -6,14 +6,15 @@
     "company": "Ai Schooling System",
     "bio": "Solo architect building a multi-tenant school management SaaS platform serving 500+ schools. Full stack engineer working across web, mobile, and desktop — from MongoDB schemas to React Native crash fixes to Electron desktop tools.",
     "location": "Punjab, Pakistan",
-    "email": "",
-    "phone": "",
-    "resumeUrl": "",
+    "email": "ahmad.develper125@gmail.com",
+    "phone": "+92 300 0000000",
+    "resumeUrl": "/resume.pdf",
     "social": {
-      "github": "",
-      "linkedin": "",
-      "twitter": "",
-      "website": ""
+      "github": "https://github.com/ahmad-genius",
+      "linkedin": "https://linkedin.com/in/ahmad-genius",
+      "twitter": "https://x.com/ahmad_genius",
+      "instagram": "https://instagram.com/ahmad.genius",
+      "website": "https://ahmadgenius.dev"
     }
   },
 

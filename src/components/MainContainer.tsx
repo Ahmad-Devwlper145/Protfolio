@@ -1,4 +1,11 @@
-import { lazy, PropsWithChildren, Suspense, useEffect, useState } from "react";
+import {
+  lazy,
+  PropsWithChildren,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import About from "./About";
 import Career from "./Career";
 import Contact from "./Contact";
@@ -16,6 +23,29 @@ const MainContainer = ({ children }: PropsWithChildren) => {
   const [isDesktopView, setIsDesktopView] = useState<boolean>(
     window.innerWidth > 1024
   );
+
+  // The tech-stack ball pit pulls in three/rapier/postprocessing (~960 KB
+  // gzipped). Hold it back until the user scrolls near it so it never competes
+  // with the character model for bandwidth during the initial load.
+  const techStackRef = useRef<HTMLDivElement | null>(null);
+  const [showTechStack, setShowTechStack] = useState(false);
+
+  useEffect(() => {
+    if (!isDesktopView || showTechStack) return;
+    const node = techStackRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setShowTechStack(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [isDesktopView, showTechStack]);
 
   useEffect(() => {
     const resizeHandler = () => {
@@ -44,9 +74,13 @@ const MainContainer = ({ children }: PropsWithChildren) => {
             <Career />
             <Work />
             {isDesktopView && (
-              <Suspense fallback={<div>Loading....</div>}>
-                <TechStack />
-              </Suspense>
+              <div ref={techStackRef}>
+                {showTechStack && (
+                  <Suspense fallback={null}>
+                    <TechStack />
+                  </Suspense>
+                )}
+              </div>
             )}
             <Contact />
           </div>

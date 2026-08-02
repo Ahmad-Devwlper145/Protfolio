@@ -1,8 +1,9 @@
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useState,
 } from "react";
 import Loading from "../components/Loading";
@@ -17,14 +18,20 @@ export const LoadingContext = createContext<LoadingType | null>(null);
 
 export const LoadingProvider = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [loading, setLoading] = useState(0);
+  const [loading, setLoadingState] = useState(0);
 
-  const value = {
-    isLoading,
-    setIsLoading,
-    setLoading,
-  };
-  useEffect(() => {}, [loading]);
+  // Progress is monotonic. React StrictMode mounts the character scene twice in
+  // dev, so two independent progress tickers end up writing to this same
+  // setter — one can reach 100 while the other is still emitting 92, which
+  // dragged the bar backwards and stranded the loader. Never go down.
+  const setLoading = useCallback((percent: number) => {
+    setLoadingState((current) => (percent > current ? percent : current));
+  }, []);
+
+  const value = useMemo(
+    () => ({ isLoading, setIsLoading, setLoading }),
+    [isLoading, setLoading]
+  );
 
   return (
     <LoadingContext.Provider value={value as LoadingType}>
